@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:file="http://www.mulesoft.org/schema/mule/file"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="schedularFlow" doc:id="cfc6d683-74fb-4fa1-95fa-d66893a5f0b8" >
+		<scheduler doc:name="Scheduler" doc:id="8262bf09-fd6c-4b3d-8f39-43c90229a1a4" >
+			<scheduling-strategy >
+				<cron expression="0 0/2 * 1/1 * ? *" />
+			</scheduling-strategy>
+		</scheduler>
+		<logger level="INFO" doc:name="Logger" doc:id="d0d7138b-d8ee-4b32-9bf0-9fdbc354f9b2" message='flow started'/>
+		<file:read doc:name="Read" doc:id="891d4771-98d8-4403-ba88-edeea587b1f9" path="D:\MuleSoft\scheduler\input-file.txt"/>
+		<logger level="INFO" doc:name="Logger" doc:id="6fc1c9dd-8037-4f3d-9919-dd412d510697" message="end of the flow"/>
+		<ee:transform doc:name="Transform Message" doc:id="e0cea6f1-ac69-4bfc-8357-2e299c711d25" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="textfile" ><![CDATA[%dw 2.0
+output application/json
+---
+"D:\MuleSoft\scheduler\FILE_"  ++ 
+(now() as String {format: "yyyyMMdd_HHmmss"}) ++ ".txt"]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<file:write doc:name="Write" doc:id="f5ce35d1-a417-4294-97ff-ffca9a70598c" path='#[vars.textfile]' mode="CREATE_NEW"/>
+		<logger level="INFO" doc:name="Logger" doc:id="f20fa11c-78d9-4209-bb4c-cf49b5a83497"/>
+	</flow>
+</mule>
